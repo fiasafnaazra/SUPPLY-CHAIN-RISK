@@ -2,12 +2,12 @@
 FROM node:20-alpine AS node-builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY . .
 RUN npm run build
 
-# Stage 2: PHP Application
-FROM php:8.2-cli
+# Stage 2: PHP Application (PHP 8.3 required)
+FROM php:8.3-cli
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

@@ -1,12 +1,6 @@
 #!/bin/sh
 set -e
 
-# Sanitize APP_URL (remove newlines, CR, tabs, spaces)
-if [ -n "$APP_URL" ]; then
-    APP_URL=$(echo "$APP_URL" | tr -d '\r\n\t ')
-    export APP_URL
-fi
-
 # Ensure storage and bootstrap directories are writable
 mkdir -p /var/www/html/storage/logs
 mkdir -p /var/www/html/storage/framework/cache
@@ -39,7 +33,7 @@ APP_NAME="Supply Chain Risk"
 APP_ENV=${APP_ENV:-production}
 APP_KEY=${APP_KEY}
 APP_DEBUG=${APP_DEBUG:-false}
-APP_URL=${APP_URL:-${RENDER_EXTERNAL_URL:-http://localhost}}
+APP_URL=${APP_URL:-http://localhost}
 
 LOG_CHANNEL=stderr
 DB_CONNECTION=sqlite
@@ -62,11 +56,11 @@ php artisan storage:link || true
 
 # Run database migrations & seeders
 echo "Running migrations..."
-php artisan migrate --force
+php artisan migrate --force || true
 echo "Running seeders..."
 php artisan db:seed --force || true
 
-# Determine port
+# Determine port from Railway $PORT or default 8080
 PORT="${PORT:-8080}"
-echo "Starting Laravel application on port $PORT..."
+echo "Starting Laravel server on 0.0.0.0:$PORT..."
 exec php artisan serve --host=0.0.0.0 --port="$PORT"

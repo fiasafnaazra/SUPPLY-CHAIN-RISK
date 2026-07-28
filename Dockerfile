@@ -23,11 +23,6 @@ RUN a2enmod rewrite
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set Apache document root to Laravel public folder
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
 WORKDIR /var/www/html
 
 # Copy application files (includes pre-built public/build assets)
@@ -48,10 +43,6 @@ RUN touch database/database.sqlite && chmod 666 database/database.sqlite
 
 RUN php artisan config:clear || true
 RUN php artisan storage:link || true
-
-# Fix Apache port for Render/Railway
-RUN sed -i 's/Listen 80/Listen ${PORT:-80}/' /etc/apache2/ports.conf
-RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost *:${PORT:-80}>/' /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 8080
 

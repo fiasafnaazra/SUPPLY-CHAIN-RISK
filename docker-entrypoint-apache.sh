@@ -1,6 +1,31 @@
 #!/bin/sh
 set -e
 
+PORT="${PORT:-8080}"
+echo "Configuring Apache to listen on port $PORT..."
+
+# Rewrite ports.conf cleanly
+cat > /etc/apache2/ports.conf << EOF
+Listen $PORT
+EOF
+
+# Rewrite 000-default.conf cleanly with AllowOverride All for Laravel routing
+cat > /etc/apache2/sites-available/000-default.conf << EOF
+<VirtualHost *:$PORT>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html/public
+
+    <Directory /var/www/html/public>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog \${APACHE_LOG_DIR}/error.log
+    CustomLog \${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+EOF
+
 echo "Creating SQLite database..."
 mkdir -p /var/www/html/database
 touch /var/www/html/database/database.sqlite
@@ -33,9 +58,5 @@ php artisan migrate --force || true
 echo "Running seeders..."
 php artisan db:seed --force || true
 
-echo "Setting Apache port to ${PORT:-8080}..."
-sed -i "s/Listen 80/Listen ${PORT:-8080}/" /etc/apache2/ports.conf
-sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT:-8080}>/" /etc/apache2/sites-available/000-default.conf
-
-echo "Starting Apache..."
+echo "Starting Apache server on port $PORT..."
 exec apache2-foreground

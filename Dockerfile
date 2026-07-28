@@ -1,5 +1,5 @@
 # PHP Application (pre-built assets included)
-FROM php:8.3-apache
+FROM php:8.4-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -35,7 +35,7 @@ COPY . .
 
 # Install PHP dependencies
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
 # Set permissions for storage & cache
 RUN chmod -R 777 storage bootstrap/cache
@@ -49,7 +49,7 @@ RUN touch database/database.sqlite && chmod 666 database/database.sqlite
 RUN php artisan config:clear || true
 RUN php artisan storage:link || true
 
-# Fix Apache port for Render
+# Fix Apache port for Render/Railway
 RUN sed -i 's/Listen 80/Listen ${PORT:-80}/' /etc/apache2/ports.conf
 RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost *:${PORT:-80}>/' /etc/apache2/sites-available/000-default.conf
 

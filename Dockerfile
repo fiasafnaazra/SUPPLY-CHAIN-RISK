@@ -1,12 +1,4 @@
-# Stage 1: Build Frontend Assets (Vite)
-FROM node:20-alpine AS node-builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --ignore-scripts
-COPY . .
-RUN npm run build
-
-# Stage 2: PHP Application (PHP 8.3 required)
+# PHP Application (no Node.js build needed - assets pre-built)
 FROM php:8.3-cli
 
 # Install system dependencies
@@ -30,11 +22,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy application files
+# Copy application files (includes pre-built public/build assets)
 COPY . .
-
-# Copy built frontend assets from Node builder stage
-COPY --from=node-builder /app/public/build ./public/build
 
 # Install PHP dependencies
 ENV COMPOSER_ALLOW_SUPERUSER=1

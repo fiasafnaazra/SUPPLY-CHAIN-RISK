@@ -35,8 +35,8 @@ RUN chmod -R 777 storage bootstrap/cache
 # Expose port for Render
 EXPOSE 8080
 
-# Copy and setup entrypoint script
+# Copy and setup entrypoint script (fix Windows CRLF line endings)
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint && chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]

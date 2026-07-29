@@ -9,10 +9,10 @@ use App\Services\GNewsService;
 use App\Services\SentimentService;
 use App\Models\NewsCache;
 
-#[Signature('news:sync')]
-#[Description('Sinkronisasi berita dari GNews API')]
 class SyncNews extends Command
 {
+    protected $signature = 'news:sync';
+    protected $description = 'Sinkronisasi berita dari GNews API';
     /**
      * Execute the console command.
      */

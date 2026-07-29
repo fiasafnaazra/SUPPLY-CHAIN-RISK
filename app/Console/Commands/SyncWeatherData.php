@@ -9,10 +9,10 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('weather:sync')]
-#[Description('Sinkronisasi data cuaca dari Open-Meteo API')]
 class SyncWeatherData extends Command
 {
+    protected $signature = 'weather:sync';
+    protected $description = 'Sinkronisasi data cuaca dari Open-Meteo API';
     public function handle(OpenMeteoService $weatherService)
     {
         $countries = Country::all();

@@ -9,10 +9,10 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('worldbank:sync')]
-#[Description('Sinkronisasi data ekonomi dari World Bank API')]
 class SyncWorldBankData extends Command
 {
+    protected $signature = 'worldbank:sync';
+    protected $description = 'Sinkronisasi data ekonomi dari World Bank API';
     public function handle(WorldBankService $worldBank)
     {
         $countries = Country::all();
